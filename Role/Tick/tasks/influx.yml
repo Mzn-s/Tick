@@ -1,0 +1,24 @@
+---
+# Установка Influx
+- name: Copy Influx.repo on server
+  copy: src={{ "influxdb.repo" }}  dest={{ destin_folder_repos }} mode=0555
+
+- name: Update cache
+  command:
+    cmd: yum makecache fast
+
+- name: Install a list of packages
+  yum:
+    name:
+      - influxdb
+      - vim
+      - curl
+    state: present
+
+- name: Start Influx
+  service: name=influxdb state=started enabled=yes
+
+- firewalld:
+    port: 8086/tcp
+    permanent: yes
+    state: enabled

@@ -1,0 +1,9 @@
+---
+- name: Test
+  hosts: Test
+  become: yes
+
+  roles:
+    - Mysql
+    - Tick
+

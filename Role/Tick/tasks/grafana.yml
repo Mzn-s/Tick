@@ -1,0 +1,23 @@
+---
+# Установка Grafana
+- name: Copy grafana.repo on server
+  copy: src={{ "grafana.repo" }}  dest={{ destin_folder_repos }} mode=0555
+
+- name:  Install Grafana
+  yum: name=grafana state=latest
+
+- name: Copy grafana.ini on server
+  copy: src={{ "grafana.ini" }}  dest={{ destin_folder_grafana }} mode=0555
+
+- name: Start Grafana
+  service: name=grafana-server state=started enabled=yes
+
+- firewalld:
+    port: 3000/tcp
+    permanent: yes
+    state: enabled
+
+- name: Restart service firewalld
+  service:
+    name: firewalld
+    state: restarted

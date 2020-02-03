@@ -1,0 +1,4 @@
+---
+# Установка epel-release
+- name:  Install epel-realese
+  yum: name=epel-release state=latest

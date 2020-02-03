@@ -1,0 +1,45 @@
+---
+- name: Install MySQL 5.7 repo
+  yum: name=http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm state=present
+
+- name: Install MySQL 5.7
+  yum: pkg={{ item }}
+  with_items:
+  - mysql-community-server
+  - mysql-community-client
+  - MySQL-python
+
+- name: Start the MySQL service
+  service: name=mysqld state=started enabled=true
+
+- name: Change mysql root password and keep track in 
+  shell: |
+    password_match=`awk '/A temporary password is generated for/ {a=$0} END{ print a }' /var/log/mysqld.log | awk '{print $(NF)}'`
+     echo $password_match
+    mysql -uroot -p$password_match --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'Qw!123456789'; flush privileges; "
+    echo "[client]"
+    user=root
+    password=Qw!123456789 > /root/.my.cnf
+  args:
+    creates: /root/.my.cnf
+  register: change_temp_pass
+  notify: restart mysqld
+
+- meta: flush_handlers
+- debug:
+    var: change_temp_pass
+
+- name: Copy .my.cnf on server
+  copy: src={{ ".my.cnf" }}  dest={{ destin_folder_cnf }} mode=0555
+
+- name: Create a new database with name 'grafana'
+  mysql_db:
+    name: grafana
+    state: present
+
+- name: Create database user with name 'grauser' and password 'Vjlbabrfwbz0!' with all database privileges
+  mysql_user:
+    name: grauser
+    password: Vjlbabrfwbz0!
+    priv: 'grafana.*:ALL'
+    state: present

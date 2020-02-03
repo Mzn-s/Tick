@@ -1,0 +1,5 @@
+---
+destin_folder_nginx: /etc/nginx/
+destin_folder_repos: /etc/yum.repos.d/
+destin_folder_grafana: /etc/grafana/
+destin_folder_telegraf: /etc/telegraf/

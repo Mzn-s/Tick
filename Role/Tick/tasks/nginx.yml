@@ -1,0 +1,19 @@
+---
+# Установка NGINX
+- name:  Install Nginx
+  yum: name=nginx state=latest
+
+- firewalld:
+    port: 80/tcp
+    permanent: yes
+    state: enabled
+
+- name: Access for Nginx
+  command:
+    cmd: setsebool httpd_can_network_connect on -P
+
+- name: Start WebServer and make it enable on boot
+  service: name=nginx state=started enabled=yes
+
+- name: Copy Nginx.conf to server
+  copy: src={{ "nginx.conf" }}  dest={{ destin_folder_nginx }} mode=0555
